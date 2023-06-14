@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: stg_property_address
+    description: address one
+    columns:
+      - name: PROPERTY_ADDRESS_ID
+        tests:
+          - unique
+          - not_null
+  - name: stg_property_valuation_values
+    description: values table
+    tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - WUFI
+          - RECEIVED_DATE
+          - CREATED_DATE
+          - CREATED_USER
+    - dbt_utils.expression_is_true:
+            expression: "CAPITAL_VALUE >= 0"
+    columns:
+      - name: WUFI
+        tests:
+          - not_null
