@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: property
+    database: wcc_cps
+    tables:
+      - name: address_locality
+      - name: address_locality_name
+      - name: address_locality_name_assoc
+      - name: address_locality_name_status
+      - name: address_locality_name_usage
+      - name: matter
+      - name: occupied_property
+      - name: parcel
+      - name: property_address
+        freshness:
+          warn_after:
+            count: 48
+            period: hour
+          error_after:
+            count: 72
+            period: hour
+        loaded_at_field: loadedtime_utc
+      - name: property_address_association
+      - name: property_association
+      - name: property_status_history
+      - name: survey_property
+      - name: title_property
+      - name: valuation_property
+      - name: valuation_usage
+      - name: valuation_values
