@@ -1,16 +1,34 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key='wufi'
+    )
+}}
+
 with vv as (
     select * from {{ ref('stg_property_valuation_values') }}
 ), vp as(
     select * from {{ ref('stg_property_valuation_property') }}
+), final as(
+    select
+        vp.wufi,
+        vp.val_ref,
+        vv.received_date,
+        vv.land_value,
+        vv.capital_value
+    from vp
+
+    join vv on vv.wufi = vp.wufi and vv.rn_latest = 1
 )
 
-select
-    vp.wufi,
-    vp.val_ref,
+select * from final
 
-    vv.land_value,
-    vv.capital_value
+{% if is_incremental() %}
 
-from vp
+  -- this filter will only be applied on an incremental run
+  -- where received_date > (select max(received_date) from {{ this }})
+    where received_date >= (select dateadd('day', -3, max(received_date)) from {{ this }})
 
-join vv on vv.wufi = vp.wufi and vv.rn_latest = 1
+{% endif %}
+
+order by received_date desc
